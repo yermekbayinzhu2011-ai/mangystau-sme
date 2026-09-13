@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Маңғыстау ШОБ · Мемлекеттік қолдау дашборды 2021–2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#14291F;--ink2:#233A2E; --green:#1B7A4B; --green-dk:#123A2B; --green-soft:#7FC0A0;
+  --green-pale:#CDE6D9; --green-tint:#E8F3EC;
+  --gold:#C9A227; --gold-pale:#E8D48A; --gold-tint:#F8F2DC;
+  --alert:#A8402F; --bg:#F2F5F2; --surface:#FFFFFF; --line:#D7E0DA; --muted:#44564C;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'PT Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'PT Sans',system-ui,sans-serif;font-weight:700;line-height:1.25}
+a{color:var(--green)}
+table{border-collapse:collapse;width:100%}
+
+.shell{display:flex;min-height:100vh}
+.rail{width:246px;flex-shrink:0;background:var(--green-dk);color:#C8DCD0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.rail .mark{padding:18px 18px 16px;border-bottom:1px solid rgba(255,255,255,.14);display:flex;gap:12px;align-items:center}
+.rail .mark img{width:46px;height:46px;object-fit:contain;flex-shrink:0}
+.rail .mark strong{display:block;font-family:'PT Sans',system-ui,sans-serif;font-size:16px;color:#fff;line-height:1.25}
+.rail .mark span{display:block;font-size:11.5px;color:#8DAE9C;margin-top:4px}
+.rail nav{padding:10px 0 26px}
+.rail nav button{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+  font-family:inherit;font-size:14px;color:#A6C2B2;padding:9px 18px;border-left:3px solid transparent}
+.rail nav button:hover{color:#fff;background:rgba(255,255,255,.06)}
+.rail nav button[aria-current="true"]{color:#fff;background:rgba(255,255,255,.10);border-left-color:var(--gold);font-weight:700}
+.rail nav button:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.rail nav .sep{font-size:11px;color:#6C8A78;padding:14px 18px 5px;letter-spacing:.03em;text-transform:uppercase}
+.rail .foot{padding:14px 18px;font-size:11.5px;color:#77937F;border-top:1px solid rgba(255,255,255,.14)}
+
+.main{flex:1;min-width:0}
+.yearbar{background:var(--surface);border-bottom:1px solid var(--line);padding:10px 34px;
+  display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:9;flex-wrap:wrap}
+.yearbar .lbl{font-size:12.5px;color:var(--muted)}
+.yearbar.off{display:none}
+.years{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.years button{font-family:inherit;font-size:13.5px;border:0;background:#fff;padding:6px 15px;cursor:pointer;
+  color:var(--muted);border-right:1px solid var(--line);font-variant-numeric:tabular-nums}
+.years button:last-child{border-right:0}
+.years button[aria-pressed="true"]{background:var(--green);color:#fff;font-weight:700}
+.wrap{max-width:1090px;padding:26px 34px 70px}
+
+.page{display:none}
+.page.on{display:block}
+.page > header{margin-bottom:22px;padding-bottom:14px;border-bottom:2px solid var(--green-pale)}
+.page > header h1{font-size:26px;letter-spacing:-.2px}
+.page > header p{color:var(--muted);font-size:14.5px;margin-top:7px;max-width:72ch}
+
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.card h3{font-size:15px;margin-bottom:14px}
+.card .sub{font-size:13px;color:var(--muted);margin:-9px 0 12px}
+.card p+p{margin-top:9px}
+
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:15px 17px;border-top:3px solid var(--green)}
+.stat.g{border-top-color:var(--gold)}
+.stat .k{font-size:12.5px;color:var(--muted)}
+.stat .v{font-family:'PT Sans',system-ui,sans-serif;font-weight:700;font-size:25px;margin-top:3px;letter-spacing:-.2px}
+.stat .n{font-size:12.5px;color:var(--muted);margin-top:3px}
+.stat .n.up{color:var(--green)} .stat .n.down{color:var(--alert)}
+
+.chartbox{position:relative;height:270px}
+.chartbox.tall{height:430px}
+.chartbox.short{height:210px}
+.empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+  color:var(--muted);font-size:13.5px;padding:20px;border:1px dashed var(--line);border-radius:8px}
+
+table.data{font-size:13.5px}
+table.data th,table.data td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+table.data th{font-weight:700;color:#25382E;font-size:12px;background:var(--green-tint)}
+table.data td.n,table.data th.n{text-align:right;font-variant-numeric:tabular-nums}
+table.data tbody tr:hover{background:#F6FAF7}
+table.data tr.total td{font-weight:700;border-top:2px solid var(--green);background:var(--green-tint)}
+table.data td.w{white-space:normal}
+
+.note{font-size:13px;color:var(--muted);background:var(--green-tint);border-left:3px solid var(--green);
+  padding:12px 14px;border-radius:0 6px 6px 0;margin-top:14px}
+.note.warn{background:var(--gold-tint);border-left-color:var(--gold)}
+.note strong{color:var(--ink)}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--surface);margin-bottom:14px}
+.seg button{font-family:inherit;font-size:13px;border:0;background:none;padding:7px 14px;cursor:pointer;color:var(--muted);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--green);color:#fff;font-weight:700}
+
+.hero{background:var(--green-dk);color:#DCEAE1;border-radius:12px;padding:26px 28px;margin-bottom:16px;
+  display:flex;gap:22px;align-items:flex-start}
+.hero img{width:84px;height:84px;object-fit:contain;flex-shrink:0;opacity:.95}
+.hero h2{font-size:20px;color:#fff;max-width:38ch;line-height:1.35}
+.hero p{font-size:14px;color:#98B7A6;margin-top:9px;max-width:64ch}
+.ratio{margin-top:18px}
+.ratio .bar{height:30px;background:#1E4A38;border-radius:5px;position:relative;overflow:hidden}
+.ratio .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--gold);display:block;min-width:2px}
+.ratio .lab{display:flex;justify-content:space-between;gap:16px;font-size:12.5px;color:#98B7A6;margin-top:8px;flex-wrap:wrap}
+.ratio .lab b{color:#fff;font-weight:400}
+
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;border-top:3px solid var(--green)}
+.tool.repay{border-top-color:var(--gold)}
+.tool h4{font-size:16px;margin-bottom:3px}
+.tool .tag{font-size:11.5px;color:var(--green);margin-bottom:10px;display:block;font-weight:700}
+.tool.repay .tag{color:#8A6B14}
+.tool dl{font-size:13.5px}
+.tool dt{color:var(--muted);font-size:12.5px;font-weight:700;margin-top:10px}
+.tool dd{margin-left:0}
+
+.steps{counter-reset:s;display:grid;gap:10px}
+.steps li{list-style:none;counter-increment:s;background:var(--surface);border:1px solid var(--line);
+  border-radius:8px;padding:13px 16px 13px 52px;position:relative;font-size:13.5px}
+.steps li::before{content:counter(s);position:absolute;left:16px;top:12px;width:24px;height:24px;
+  border-radius:50%;background:var(--green);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.steps li b{display:block;font-size:14.5px;margin-bottom:2px}
+
+.rate{margin-top:6px}
+.rate .track{display:flex;height:36px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.rate .track div{display:flex;align-items:center;justify-content:center;font-size:12.5px;color:#fff}
+.rate .own{background:var(--green);flex:60}
+.rate .gov{background:var(--gold);flex:40}
+.rate .cap{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 4px}
+.flow .step{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--green);border-radius:8px;padding:14px}
+.flow .step h4{font-size:14px;margin-bottom:5px}
+.flow .step p{font-size:12.5px;color:var(--muted)}
+.flow .step:nth-child(3),.flow .step:nth-child(4){border-top-color:var(--gold)}
+
+.calc{display:grid;grid-template-columns:300px 1fr;gap:18px}
+.calc .fields label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:3px}
+.calc .fields div.f{margin-bottom:12px}
+.calc .fields input{width:100%;font-family:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;color:var(--ink);font-variant-numeric:tabular-nums}
+.calc .fields input:focus{outline:2px solid var(--green);outline-offset:-1px}
+.calc .fields .preset{font-family:inherit;font-size:12.5px;border:1px solid var(--green);background:var(--green-tint);
+  color:var(--green);padding:7px 10px;border-radius:6px;cursor:pointer;width:100%;margin-bottom:10px}
+.out{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;align-content:start}
+.out .o{border:1px solid var(--line);border-radius:8px;padding:14px;background:#FAFCFB}
+.out .o .k{font-size:12.5px;color:var(--muted)}
+.out .o .v{font-family:'PT Sans',system-ui,sans-serif;font-weight:700;font-size:22px;margin-top:3px}
+.err{font-size:12.5px;color:var(--alert);margin-top:-6px;margin-bottom:10px;display:none}
+
+.finding{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.finding h4{font-size:15px;margin-bottom:6px}
+.finding p{font-size:13.5px;color:#2B4036}
+.finding .fig{font-family:'PT Sans',system-ui,sans-serif;font-weight:700;font-size:20px;color:var(--green);display:block;margin-bottom:4px}
+.finding.o .fig{color:#8A6B14}
+
+.passport{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.passport dt{font-size:12px;color:var(--muted);margin-top:12px}
+.passport dt:first-of-type{margin-top:0}
+.passport dd{font-size:14px;margin-left:0}
+
+.lorenz{display:flex;gap:4px;align-items:flex-end;height:150px;margin-top:6px}
+.lorenz div{flex:1;background:var(--green-pale);border-radius:3px 3px 0 0;position:relative}
+.lorenz div span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:10.5px;color:var(--muted)}
+.lorenz div b{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:10.5px;color:var(--ink);font-weight:400}
+.lorenz div:last-child{background:var(--gold)}
+
+ul.src{list-style:none;font-size:13.5px}
+ul.src li{padding:10px 0;border-bottom:1px solid var(--line)}
+ul.src li b{display:block;font-weight:700}
+ul.src li span{color:var(--muted);font-size:12.5px}
+
+@media (max-width:900px){
+  .shell{display:block}
+  .rail{width:100%;height:auto;position:static}
+  .rail nav{display:flex;flex-wrap:wrap;padding:8px}
+  .rail nav .sep{display:none}
+  .rail nav button{width:auto;border-left:0;border-bottom:3px solid transparent;padding:8px 12px}
+  .rail nav button[aria-current="true"]{border-left:0;border-bottom-color:var(--gold)}
+  .rail .foot{display:none}
+  .yearbar{padding:9px 16px}
+  .wrap{padding:18px 16px 50px}
+  .g2,.g3,.g4,.flow,.calc,.out{grid-template-columns:1fr}
+  .hero{flex-direction:column} .hero img{width:64px;height:64px}
+  .chartbox{height:260px} .chartbox.tall{height:520px}
+}
+@media print{ .rail,.yearbar{display:none} .page{display:block!important;page-break-after:always} body{background:#fff} }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<aside class="rail">
+  <div class="mark">
+    <img id="logoR" alt="Маңғыстау">
+    <div>
+      <strong>Маңғыстау ШОБ</strong>
+      <span>Мемлекеттік қолдау мониторингі<br>2021–2025</span>
+    </div>
+  </div>
+  <nav id="nav">
+    <div class="sep">Түсіндірме</div>
+    <button data-p="p0" aria-current="true">Қолдау түрлері</button>
+    <div class="sep">Талдау</div>
+    <button data-p="p1">Шолу</button>
+    <button data-p="p2">Динамика</button>
+    <button data-p="p3">Аудандар</button>
+    <button data-p="p4">Салалар</button>
+    <button data-p="p5">Қолдау және грант</button>
+    <button data-p="p6">Сауалнама</button>
+    <div class="sep">Ұсыныс</div>
+    <button data-p="p7">Үштік модель</button>
+    <button data-p="p8">Қорытынды</button>
+    <button data-p="p9">Дереккөздер</button>
+  </nav>
+  <div class="foot">ҚР ҰСБ Маңғыстау департаменті, облыс әкімдігі және «Даму» қорының ресми деректері негізінде</div>
+</aside>
+
+<main class="main">
+<div class="yearbar off" id="yearbar">
+  <span class="lbl">Есепті жыл</span>
+  <div class="years" id="years">
+    <button data-y="2021">2021</button>
+    <button data-y="2022">2022</button>
+    <button data-y="2023">2023</button>
+    <button data-y="2024">2024</button>
+    <button data-y="2025" aria-pressed="true">2025</button>
+  </div>
+  <span class="lbl" id="yearHint"></span>
+</div>
+<div class="wrap">
+<!-- ===== 0. ҚОЛДАУ ТҮРЛЕРІ ===== -->
+<section class="page on" id="p0">
+  <header>
+    <h1>Мемлекеттік қаржылық қолдау дегеніміз не</h1>
+    <p>Дашбордтағы сандарды дұрыс оқу үшін алдымен құралдардың өзін ажыратып алу керек: грант, субсидия, кепілдік және микрокредит — бұл төрт бөлек нәрсе, шарттары да, беретін мекемесі де әртүрлі.</p>
+  </header>
+
+  <div class="card">
+    <h3>Қысқаша анықтама</h3>
+    <p>Мемлекеттік қаржылық қолдау — кәсіпкердің қаржыға қол жеткізуін жеңілдету үшін мемлекет жасайтын араласу. Мемлекет мұны үш жолмен істейді: ақшаны <b>тікелей береді</b> (грант), несиенің <b>бағасын арзандатады</b> (субсидия) немесе банк алдындағы <b>тәуекелді өз мойнына алады</b> (кепілдік).</p>
+    <p>Маңызды айырмашылық: тек грант қана қайтарылмайды. Субсидия мен кепілдік — несиені жеңілдететін құралдар, несиенің негізгі сомасын кәсіпкер бәрібір өзі қайтарады. Дәл сондықтан 2021–2025 жылдары субсидияланған несиелердің жалпы көлемі 249,16 млрд теңге болса, бюджеттен берілген қайтарымсыз грант небәрі 487,3 млн теңге.</p>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="tool">
+      <h4>Грант</h4><span class="tag">Қайтарылмайды</span>
+      <dl>
+        <dt>Не үшін</dt><dd>Жаңа бизнесті бастауға немесе қолданыстағысын кеңейтуге берілетін қайтарымсыз қаражат. Көбіне жабдық, шикізат, үй-жайды жабдықтауға жұмсалады.</dd>
+        <dt>Кім береді</dt><dd>Жергілікті бюджет — облыс әкімдігінің кәсіпкерлік және сауда басқармасы арқылы, конкурстық комиссияның шешімімен.</dd>
+        <dt>Негізгі шарттар</dt><dd>Бизнес-жоспар, кәсіпкерлік бойынша оқудан өткені туралы сертификат, әдетте өз үлесін қосу және нысаналы жұмсағаны туралы есеп беру.</dd>
+        <dt>Маңғыстаудағы ауқым</dt><dd>2021–2025 жж. барлығы 104 жоба, 487,3 млн ₸, орташа есеппен 4,69 млн ₸.</dd>
+      </dl>
+    </div>
+
+    <div class="tool repay">
+      <h4>Мөлшерлемені субсидиялау</h4><span class="tag">Несие қайтарылады, пайызы азаяды</span>
+      <dl>
+        <dt>Не үшін</dt><dd>Кәсіпкер банктен қарапайым несие алады, бірақ оның пайызының бір бөлігін мемлекет банкке өзі төлейді. Кәсіпкер төмендетілген мөлшерлеме ғана төлейді.</dd>
+        <dt>Кім береді</dt><dd>«Даму» кәсіпкерлікті дамыту қоры — екінші деңгейлі банк арқылы. Ақша кәсіпкердің қолына емес, банкке аударылады.</dd>
+        <dt>Қанша бөлігі жабылады</dt>
+        <dd class="rate">
+          <div class="track"><div class="own">60% — кәсіпкер</div><div class="gov">40% — мемлекет</div></div>
+          <div class="cap">«Даму» қорының қолданыстағы шарты: субсидия мөлшері — номиналды сыйақы мөлшерлемесінің 40%-ы. Әлеуметтік кәсіпкерлік субъектілері үшін 50%. Мысалы, нарықтық мөлшерлеме 19% болса, мемлекет 7,6 пайыздық тармағын жабады, кәсіпкерге 11,4% қалады.</div>
+        </dd>
+        <dt>Сома шектеуі</dt><dd>«Іскер аймақ» бағдарламасы бойынша — 200 млн ₸-ге дейін. Сауда саласындағы кәсіпкерлер үшін — 3 млрд ₸-ден аспайды.</dd>
+      </dl>
+    </div>
+
+    <div class="tool repay">
+      <h4>Кепілдендіру</h4><span class="tag">Ақша емес, кепілдеме</span>
+      <dl>
+        <dt>Не үшін</dt><dd>Кәсіпкерде банкке қоятын кепіл мүлкі жеткіліксіз болғанда, «Даму» қоры несиенің бір бөлігіне кепіл болады. Кәсіпкер ақша алмайды — банктің тәуекелі азаяды.</dd>
+        <dt>Кім береді</dt><dd>«Даму» қоры, банктің өтінімі негізінде.</dd>
+        <dt>Кепілдік мөлшері</dt><dd>7 млрд ₸-ге дейінгі жобалар бойынша — қаржыландыру сомасының 85%-ына дейін, бірақ 3,5 млрд ₸-ден аспайды. 7 млрд ₸-ден асатын ірі инвестициялық жобаларда — жоба құнының 30%-ынан аспайды.</dd>
+        <dt>Неге маңызды</dt><dd>Сауалнамада кепіл мүлкінің жоқтығы екінші орындағы кедергі болды — 43 респонденттің 23-і (53,5%) осыны атаған. Дәл осы құрал сол мәселеге арналған, бірақ ол туралы ақпарат жеткіліксіз.</dd>
+      </dl>
+    </div>
+
+    <div class="tool repay">
+      <h4>Микрокредит</h4><span class="tag">Толық қайтарылады</span>
+      <dl>
+        <dt>Не үшін</dt><dd>Шағын сомадағы жеңілдікті несие — көбіне ауылдық жерде және шағын қалаларда, айналым қаражаты мен шағын жабдыққа.</dd>
+        <dt>Кім береді</dt><dd>Микроқаржы ұйымдары, несиелік серіктестіктер және ауыл шаруашылығын қаржылай қолдау институттары арқылы.</dd>
+        <dt>Негізгі шарттар</dt><dd>Оқудан өту, бизнес-жоспар, кейде жұмыс орнын ашу міндеттемесі.</dd>
+        <dt>Ерекшелігі</dt><dd>Талап ең жеңіл, бірақ сома шағын — өндірістік жоба үшін жеткіліксіз.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Салыстыру кестесі</h3>
+    <table class="data">
+      <thead><tr><th>Құрал</th><th>Қайтарыла ма</th><th>Кім береді</th><th>Кімге ыңғайлы</th><th>Басты кедергісі</th></tr></thead>
+      <tbody>
+        <tr><td>Грант</td><td>Жоқ</td><td>Әкімдік (жергілікті бюджет)</td><td class="w">Жаңа бастаған, шағын жоба</td><td class="w">Конкурс, сома шағын</td></tr>
+        <tr><td>Субсидия</td><td>Несие қайтарылады</td><td>«Даму» қоры + банк</td><td class="w">Қолданыстағы, өсіп келе жатқан бизнес</td><td class="w">Банктің мақұлдауы, кепіл қажет</td></tr>
+        <tr><td>Кепілдік</td><td>Кепілдеме, ақша емес</td><td>«Даму» қоры</td><td class="w">Кепіл мүлкі жетпейтін кәсіпкер</td><td class="w">Ақпараттың аздығы</td></tr>
+        <tr><td>Микрокредит</td><td>Иә, толық</td><td>МҚҰ, несиелік серіктестік</td><td class="w">Ауыл және шағын қала кәсіпкері</td><td class="w">Сома өндіріске жетпейді</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>«Даму» қорының қолданыстағы бағдарламалары</h3>
+    <p class="sub">Қор сайтындағы ағымдағы шарттар бойынша</p>
+    <table class="data">
+      <thead><tr><th>Бағдарлама</th><th>Түрі</th><th>Мөлшері</th><th class="n">Сома шегі</th></tr></thead>
+      <tbody>
+        <tr><td class="w">Іскер аймақ</td><td>Субсидия</td><td class="w">Номиналды мөлшерлеменің 40%-ы; әлеуметтік кәсіпкерлікке 50%</td><td class="n">200 млн ₸</td></tr>
+        <tr><td class="w">Сауда саласындағы кәсіпкерлерді субсидиялау</td><td>Субсидия</td><td class="w">Номиналды мөлшерлеменің 40%-ы</td><td class="n">3 млрд ₸-ге дейін</td></tr>
+        <tr><td class="w">Кепіл жетіспегендегі кепілдік</td><td>Кепілдік</td><td class="w">Қаржыландыру сомасының 85%-ына дейін, 3,5 млрд ₸-ден аспайды</td><td class="n">7 млрд ₸-ге дейін</td></tr>
+        <tr><td class="w">Ірі инвестжобаларға кепілдік</td><td>Кепілдік</td><td class="w">Жоба құнының 30%-ынан аспайды</td><td class="n">7 млрд ₸-ден жоғары</td></tr>
+        <tr><td class="w">Егіс және жинау жұмыстарына кепілдік</td><td>Кепілдік</td><td class="w">Несие сомасының 85%-ы</td><td class="n">1,5 млрд ₸-ге дейін</td></tr>
+        <tr><td class="w">Агробизнеске кепілдік</td><td>Кепілдік</td><td class="w">Негізгі борыштың 85%-ына дейін</td><td class="n">5 млрд ₸-ге дейін</td></tr>
+      </tbody>
+    </table>
+    <div class="note warn">Бағдарламалардың шарттары мен сома шектеулері өзгеріп отырады. Өтінім бермес бұрын «Даму» қорының ресми сайтынан ағымдағы ережені тексеру қажет. Бұл кесте жалпы логиканы түсіндіреді, заңдық кеңес емес.</div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Қолдауды алу қадамдары</h3>
+    <ol class="steps">
+      <li><b>Идея мен бизнес-жоспар</b>Жобаның мәні, шығын сметасы, өткізу нарығы және қанша жұмыс орны ашылатыны нақты жазылады. Барлық құрал үшін бірінші талап — осы.</li>
+      <li><b>Оқудан өту</b>Кәсіпкерлік негіздері бойынша курстан өтіп, сертификат алу. Грант пен микрокредит үшін көп жағдайда міндетті.</li>
+      <li><b>Құралды таңдау</b>Ақша қажет пе, әлде несиенің пайызы қымбат па, әлде кепіл жетпей тұр ма — жауабына қарай грант, субсидия немесе кепілдік таңдалады.</li>
+      <li><b>Өтінім беру</b>Грант үшін — әкімдіктің кәсіпкерлік басқармасына, конкурс шеңберінде. Субсидия мен кепілдік үшін — алдымен банкке, банк «Даму» қорына жолдайды.</li>
+      <li><b>Шешім</b>Грантты конкурстық комиссия, субсидия мен кепілдікті қор мен банк бірлесіп бекітеді. Бас тарту себебі жазбаша түрде берілуі тиіс.</li>
+      <li><b>Шарт, жұмсау және есеп</b>Қаражат тек шартта көрсетілген мақсатқа жұмсалады. Нысаналы пайдалану тексеріледі, бұзылған жағдайда қаражат қайтарылады.</li>
+    </ol>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card">
+      <h3>Бас тартудың жиі себептері</h3>
+      <table class="data">
+        <thead><tr><th>Себеп</th><th>Не істеу керек</th></tr></thead>
+        <tbody>
+          <tr><td class="w">Бизнес-жоспар нақты емес</td><td class="w">Сату болжамын және шығын сметасын құжатпен растау</td></tr>
+          <tr><td class="w">Кепіл мүлкі жеткіліксіз</td><td class="w">Кепілдендіру құралын қоса сұрау</td></tr>
+          <tr><td class="w">Салық берешегі бар</td><td class="w">Өтінім бермес бұрын берешекті жабу</td></tr>
+          <tr><td class="w">Сала басымдық тізіміне кірмейді</td><td class="w">Ағымдағы басым салалар тізімін тексеру</td></tr>
+          <tr><td class="w">Бұрынғы қолдау бойынша есеп жоқ</td><td class="w">Алдыңғы жоба бойынша есепті жабу</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Сауалнама не көрсетті</h3>
+      <p class="sub">43 кәсіпкер, 2026 ж. 5–7 қыркүйек</p>
+      <p>Кәсіпкерлер басты кедергі ретінде ақшаның жоқтығын емес, <b>рәсімдерді</b> атаған: құжат айналымы мен банктік бюрократия — 60,5%, кепіл мүлкінің жетіспеушілігі — 53,5%, бағдарламалар туралы ақпараттың аздығы — 39,5%.</p>
+      <p>Яғни жоғарыдағы құралдардың үшеуі осы мәселелерге жауап беруге тиіс еді, бірақ кәсіпкерлердің тек 18,6%-ы ғана қолдау алған. Ақпараттың жетіспеушілігі — құрал емес, коммуникация мәселесі.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 1. ШОЛУ ===== -->
+<section class="page" id="p1">
+  <header>
+    <h1>Шолу — <span class="yr">2025</span> жыл</h1>
+    <p>Маңғыстау облысындағы шағын және орта кәсіпкерліктің таңдалған жылдағы жағдайы мен мемлекеттік қолдаудың ауқымы.</p>
+  </header>
+
+  <div class="hero">
+    <img id="logoH" alt="">
+    <div style="flex:1;min-width:0">
+      <h2 id="heroH">—</h2>
+      <p id="heroP">—</p>
+      <div class="ratio">
+        <div class="bar"><i id="heroBar" style="width:2px"></i></div>
+        <div class="lab">
+          <span><b id="heroL">—</b> — қайтарымсыз грант</span>
+          <span><b id="heroR">—</b> — ШОБ өнімі</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g4">
+    <div class="stat"><div class="k">Жұмыс істеп тұрған субъект</div><div class="v" id="kAct">—</div><div class="n" id="kActN">—</div></div>
+    <div class="stat"><div class="k">Жұмыспен қамтылғандар</div><div class="v" id="kEmp">—</div><div class="n" id="kEmpN">—</div></div>
+    <div class="stat g"><div class="k">Өнім шығарылымы</div><div class="v" id="kOut">—</div><div class="n" id="kOutN">—</div></div>
+    <div class="stat g"><div class="k">1 субъектіге жұмысшы</div><div class="v" id="kRat">—</div><div class="n" id="kRatN">—</div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card">
+      <h3>Сандық өсім сәйкессіздігі</h3>
+      <p class="sub">2021 = 100 индекс; таңдалған жыл ерекшеленген</p>
+      <div class="chartbox"><canvas id="cGap"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>Аудандар бойынша өнім, млн ₸</h3>
+      <p class="sub" id="ovDistSub">—</p>
+      <div class="chartbox"><canvas id="cOvDist"></canvas></div>
+    </div>
+  </div>
+
+  <div class="note warn">
+    Зерттеудің басты тұжырымы: субъектілер саны 2021–2025 жылдары 39,3%-ға өскенімен, жұмыспен қамту 2023 жылдан бері 151 мың адам деңгейінде тұрып қалған. Бір субъектіге шаққандағы жұмысшы саны 2,23-тен 1,92 адамға дейін, 13,7%-ға азайды.
+  </div>
+</section>
+
+<!-- ===== 2. ДИНАМИКА ===== -->
+<section class="page" id="p2">
+  <header>
+    <h1>Динамика · 2021–2025</h1>
+    <p>Субъектілер саны, жұмыспен қамту, өнім көлемі және еңбек сыйымдылығының бес жылдық қозғалысы. Бұл бет бүкіл кезеңді бірден көрсетеді.</p>
+  </header>
+
+  <div class="grid g4">
+    <div class="stat"><div class="k">Жұмыс істейтін субъект, 2025</div><div class="v">78 741</div><div class="n up">2021 ж. салыстырғанда +39,3%</div></div>
+    <div class="stat"><div class="k">Жұмыспен қамту, 2025</div><div class="v">151 273</div><div class="n down">2023 ж. шыңынан −2,6%</div></div>
+    <div class="stat g"><div class="k">Өнім, ағымдағы бағада</div><div class="v">+61,6%</div><div class="n">1 604,6 → 2 593,1 млрд ₸</div></div>
+    <div class="stat g"><div class="k">Өнім, салыстырмалы бағада</div><div class="v">−6,6%</div><div class="n down">нақты көлем қысқарған</div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Тіркелген және жұмыс істеп тұрған субъектілер</h3><p class="sub">бірлік, жыл соңына</p><div class="chartbox"><canvas id="cSubj"></canvas></div></div>
+    <div class="card"><h3>ШОБ-та жұмыспен қамтылғандар</h3><p class="sub">адам, келесі жылдың 1 қаңтарына</p><div class="chartbox"><canvas id="cEmp"></canvas></div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Өнім: номинал мен нақты көлем</h3><p class="sub">2021 = 100 индекс</p><div class="chartbox"><canvas id="cReal"></canvas></div></div>
+    <div class="card"><h3>Еңбек сыйымдылығы (L)</h3><p class="sub">бір субъектіге шаққандағы жұмысшы саны, адам</p><div class="chartbox"><canvas id="cL"></canvas></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Жиынтық кесте</h3>
+    <table class="data">
+      <thead><tr><th>Жыл</th><th class="n">Тіркелген</th><th class="n">Жұмыс істейтін</th><th class="n">Қамту</th><th class="n">Өнім, млн ₸</th><th class="n">Индекс</th><th class="n">L</th><th class="n">ΔL</th></tr></thead>
+      <tbody id="tbDyn"></tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    ΔL — жыл ішінде қосылған әрбір жаңа субъектіге қанша жұмыс орны келгенін көрсетеді. 2022 жылы бұл көрсеткіш 1,57 болса, 2025 жылы 0,12-ге дейін түсті. 2024 жылы субъектілер саны азайғандықтан ΔL есептелмейді.
+  </div>
+</section>
+<!-- ===== 3. АУДАНДАР ===== -->
+<section class="page" id="p3">
+  <header>
+    <h1>Аудандар қимасында — <span class="yr">2025</span></h1>
+    <p>Облыс ішіндегі теңсіздік. Жоғарыдағы жыл ауыстырғышы бұл беттің барлық графигі мен кестесіне әсер етеді.</p>
+  </header>
+
+  <div class="seg" role="group" id="segDist">
+    <button data-m="subj">Субъект саны</button>
+    <button data-m="emp">Жұмыспен қамту</button>
+    <button data-m="out" aria-pressed="true">Өнім шығарылымы</button>
+    <button data-m="sub">Субсидия</button>
+  </div>
+
+  <div class="grid g2">
+    <div class="card"><h3 id="hDist">—</h3><div class="chartbox" id="boxDist"><canvas id="cDist"></canvas></div></div>
+    <div class="card"><h3>Облыстағы үлесі, %</h3><div class="chartbox" id="boxShare"><canvas id="cShare"></canvas></div></div>
+  </div>
+
+  <div class="grid g3" style="margin-top:14px">
+    <div class="stat"><div class="k">Ақтаудың өнімдегі үлесі</div><div class="v" id="dAk">—</div><div class="n" id="dAkN">—</div></div>
+    <div class="stat"><div class="k">Ақтаудың субсидиядағы үлесі</div><div class="v" id="dAkS">—</div><div class="n">жылдық субсидия көлемінен</div></div>
+    <div class="stat g"><div class="k">Шеткі 4 аудан</div><div class="v" id="dRest">—</div><div class="n">Бейнеу, Қарақия, Маңғыстау, Түпқараған</div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Аудандар кестесі — <span class="yr">2025</span></h3>
+    <table class="data">
+      <thead><tr><th>Аумақ</th><th class="n">Субъект</th><th class="n">Қамту</th><th class="n">Өнім, млн ₸</th><th class="n">Субсидия, млрд ₸</th><th class="n">L</th></tr></thead>
+      <tbody id="tbDist"></tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Субсидияның аудандық панелі, млрд ₸</h3>
+    <p class="sub">«Даму» қорының тіркелімі бойынша, 7 аудан × 5 жыл</p>
+    <div class="chartbox"><canvas id="cPanel"></canvas></div>
+  </div>
+
+  <div class="note warn">
+    Аумақтық шоғырлану Херфиндаль индексімен өлшенеді: аудандар бойынша <b>HHI = 4 134</b>. Индекс 2 500-ден жоғары болса, нарық «жоғары шоғырланған» деп саналады. Салалар бойынша HHI небәрі 1 241, демек негізгі теңсіздік салалық емес, аумақтық.
+  </div>
+</section>
+
+<!-- ===== 4. САЛАЛАР ===== -->
+<section class="page" id="p4">
+  <header>
+    <h1>Салалық құрылым — <span class="yr">2025</span></h1>
+    <p>Қай салада қанша субъект бар, қаншасы адам жұмыспен қамтиды және қанша өнім береді. Модельдің «саудадан өндіріске» аргументі осында дәлелденеді.</p>
+  </header>
+
+  <div id="sectWrap">
+    <div class="grid g3">
+      <div class="stat"><div class="k">Саудадағы субъект үлесі</div><div class="v" id="sTrade">—</div><div class="n" id="sTradeN">—</div></div>
+      <div class="stat"><div class="k">Өңдеу өнеркәсібінің үлесі</div><div class="v" id="sMfg">—</div><div class="n" id="sMfgN">—</div></div>
+      <div class="stat g"><div class="k">1 субъектіге жұмыс орны</div><div class="v" id="sRatio">—</div><div class="n">өңдеу : сауда</div></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Салалар бойынша: субъект, жұмыспен қамту, өнім</h3>
+      <p class="sub">Бағандар нормаланған — әр саланың өз көрсеткішіндегі үлесі, %</p>
+      <div class="chartbox tall"><canvas id="cSector"></canvas></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Бір субъектіге шаққандағы жұмыс орны</h3>
+      <p class="sub">Жұмыс орнын тудыру тиімділігі бойынша сұрыпталған</p>
+      <div class="chartbox"><canvas id="cJobs"></canvas></div>
+    </div>
+    <div class="note" id="sectNote">—</div>
+  </div>
+
+  <div id="sectEmpty" style="display:none">
+    <div class="card"><div class="empty">2021 жыл бойынша салалық кесінді ҚР ҰСБ-ның сол жылғы жедел ақпаратында жарияланбаған — онда тек аудандық бөлініс берілген. Салалық деректер 2022, 2023, 2024 және 2025 жылдар үшін қолжетімді.</div></div>
+  </div>
+</section>
+
+<!-- ===== 5. ҚОЛДАУ ЖӘНЕ ГРАНТ ===== -->
+<section class="page" id="p5">
+  <header>
+    <h1>Мемлекеттік қолдау және грант</h1>
+    <p>Субсидиялау мен қайтарымсыз гранттың ауқымы, үлестірімі және шоғырлануы. Дереккөздер: «Даму» қорының 01.08.2026 жағдайындағы есебі және облыс әкімдігінің 27.08.2026 ж. № ЖТ-2026-03763749 хаты.</p>
+  </header>
+
+  <div class="grid g4">
+    <div class="stat"><div class="k">Субсидияланған несие, 5 жыл</div><div class="v">249,16 млрд ₸</div><div class="n">6 030 жоба</div></div>
+    <div class="stat"><div class="k">Өңдеу өнеркәсібіне</div><div class="v">59,68 млрд ₸</div><div class="n">612 жоба, 24,0%</div></div>
+    <div class="stat g"><div class="k">Қайтарымсыз грант</div><div class="v">487,3 млн ₸</div><div class="n">104 жоба, орташа 4,69 млн ₸</div></div>
+    <div class="stat g"><div class="k">Джини коэффициенті</div><div class="v">0,758</div><div class="n">қаржы үлестірімінің теңсіздігі</div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Таңдалған жылғы субсидия</h3><p class="sub" id="gSubSub">—</p><div class="chartbox"><canvas id="cSub"></canvas></div></div>
+    <div class="card"><h3>Грант: сома және жоба саны</h3><p class="sub">таңдалған жыл ерекшеленген</p><div class="chartbox"><canvas id="cGrant"></canvas></div></div>
+  </div>
+
+  <div class="grid g4" style="margin-top:14px">
+    <div class="stat"><div class="k">Жылғы субсидия</div><div class="v" id="gSum">—</div><div class="n" id="gSumN">—</div></div>
+    <div class="stat"><div class="k">Жылғы грант</div><div class="v" id="gGr">—</div><div class="n" id="gGrN">—</div></div>
+    <div class="stat g"><div class="k">Грант / өнім</div><div class="v" id="gShare">—</div><div class="n">сол жылғы ШОБ өнімінен</div></div>
+    <div class="stat g"><div class="k">Қолдаумен қамту</div><div class="v" id="gCov">—</div><div class="n">тіркелген субъектілерден</div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Жиынтық кесте, 2021–2025</h3>
+    <table class="data">
+      <thead><tr><th>Жыл</th><th class="n">Субсидия, млрд ₸</th><th class="n">Жоба</th><th class="n">1 жобаға, млн ₸</th><th class="n">Грант, млн ₸</th><th class="n">Жоба</th><th class="n">1 грантқа, млн ₸</th></tr></thead>
+      <tbody id="tbSup"></tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Қаржы кімге тиді: 6 030 жобаның үлестірімі</h3>
+    <p class="sub">Джини коэффициенті 0,758. Медиана 11,0 млн ₸, орташа 41,3 млн ₸</p>
+    <div class="lorenz">
+      <div style="height:8%"><b>6,5%</b><span>төменгі 50%</span></div>
+      <div style="height:26%"><b>20,4%</b><span>төменгі 80%</span></div>
+      <div style="height:39%"><b>31,0%</b><span>төменгі 90%</span></div>
+      <div style="height:53%"><b>42,4%</b><span>төменгі 95%</span></div>
+      <div style="height:84%"><b>66,8%</b><span>төменгі 99%</span></div>
+      <div style="height:42%"><b>33,2%</b><span>жоғарғы 1%</span></div>
+    </div>
+    <div class="note" style="margin-top:34px">Жобалардың жартысы (3 015 жоба) қаржының 6,5%-ын ғана алған, ал ең ірі 61 жоба — 33,2%-ын. Орташа сома медианадан 3,8 есе жоғары, бұл үлестірімнің қатты қисайғанын білдіреді.</div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Банктер бойынша бөліну</h3><p class="sub">субсидияланған несие көлемі, млрд ₸</p><div class="chartbox"><canvas id="cBank"></canvas></div></div>
+    <div class="card">
+      <h3>Әйел және ер кәсіпкерлер</h3>
+      <p class="sub">басшының жынысы бойынша, 2021–2025 жж.</p>
+      <div class="chartbox short"><canvas id="cGen"></canvas></div>
+      <table class="data" style="margin-top:12px">
+        <thead><tr><th>Басшы</th><th class="n">Жоба</th><th class="n">Үлесі</th><th class="n">Қаржы, млрд ₸</th><th class="n">Үлесі</th><th class="n">1 жобаға</th></tr></thead>
+        <tbody>
+          <tr><td>Әйел</td><td class="n">3 199</td><td class="n">53,1%</td><td class="n">80,55</td><td class="n">32,3%</td><td class="n">25,2 млн ₸</td></tr>
+          <tr><td>Ер</td><td class="n">2 831</td><td class="n">46,9%</td><td class="n">168,62</td><td class="n">67,7%</td><td class="n">59,6 млн ₸</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="note warn">
+    Әйелдер басқаратын кәсіпорындар жобалардың жартысынан көбін (53,1%) алса, қаржының үштен бірін ғана (32,3%) иеленген. Бір жобаға шаққандағы айырма 2,4 есе. Бұл көрсеткіш «Даму» тіркелімінде тікелей берілген, қосымша есептеуді қажет етпейді.
+  </div>
+
+  <div class="note">
+    <strong>Маңызды ескертпе.</strong> 249,16 млрд теңге — субсидиялауға мақұлданған несиелердің жалпы көлемі, бюджеттен жұмсалған сома емес. Бюджет шығыны номиналды мөлшерлеменің 40%-ы мөлшерінде ғана болғандықтан, ол бұдан әлдеқайда аз. Сондықтан бұл санды 487,3 млн теңгелік грантпен тікелей салыстыруға болмайды.
+  </div>
+</section>
+
+<!-- ===== 6. САУАЛНАМА ===== -->
+<section class="page" id="p6">
+  <header>
+    <h1>Кәсіпкерлер сауалнамасы</h1>
+    <p>Автордың өз зерттеуі: 43 респондент, 2026 жылғы 5–7 қыркүйек, Google Forms. Бір мезгілде жиналған, сондықтан жылдарға бөлінбейді.</p>
+  </header>
+
+  <div class="grid g4">
+    <div class="stat"><div class="k">Респондент</div><div class="v">43</div><div class="n">кәсіпкер</div></div>
+    <div class="stat"><div class="k">Қолдау алған</div><div class="v">18,6%</div><div class="n">8 респондент</div></div>
+    <div class="stat g"><div class="k">Офф-тейкті қолдайды</div><div class="v">76,7%</div><div class="n">33 респондент</div></div>
+    <div class="stat g"><div class="k">Жастарды жұмысқа алуға дайын</div><div class="v">100%</div><div class="n">41,9%-ы шартсыз</div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Негізгі кедергі неде?</h3><p class="sub">Бірнеше жауап таңдауға болатын сұрақ, жауап саны</p><div class="chartbox"><canvas id="cBar"></canvas></div></div>
+    <div class="card"><h3>Мемлекеттік қолдау алдыңыз ба?</h3><div class="chartbox"><canvas id="cQ1"></canvas></div></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><h3>Мұнай компанияларына офф-тейк міндеттелуі керек пе?</h3><div class="chartbox short"><canvas id="cQ4"></canvas></div></div>
+    <div class="card"><h3>Қолдау алған кәсіпкер жұмыс орнын ашуға міндетті ме?</h3><div class="chartbox short"><canvas id="cQ2"></canvas></div></div>
+  </div>
+
+  <div class="note">
+    Басты нәтиже — кедергілердің бірінші екеуі қаржы тапшылығы емес, институционалдық: құжат айналымы (60,5%) және кепіл мүлкінің жоқтығы (53,5%). Дәл осы екі кедергіні үштік модель офф-тейк келісімшартты кепілдің орнына қою арқылы шешеді.
+  </div>
+</section>
+<!-- ===== 7. МОДЕЛЬ ===== -->
+<section class="page" id="p7">
+  <header>
+    <h1>Авторлық үшжақты өндірістік модель</h1>
+    <p>«Мұнай компаниясының тапсырысы → «Даму» қорының қаржыландыруы → жергілікті жастарды жұмыспен қамту» тізбегі, қосалқы тетіктері және бюджеттік бағасы.</p>
+  </header>
+
+  <div class="flow">
+    <div class="step"><h4>1. Офф-тейк</h4><p>«Маңғыстаумұнайгаз», «Өзенмұнайгаз» жергілікті ШОБ-пен 5 жылға дейінгі сатып алу келісімшартын жасайды</p></div>
+    <div class="step"><h4>2. Қаржыландыру</h4><p>«Даму» қоры ұзақ мерзімді келісімшартты кепіл ретінде танып, жеңілдетілген мөлшерлеме ұсынады</p></div>
+    <div class="step"><h4>3. Зауыт</h4><p>Ақтау мен Жаңаөзеннің өнеркәсіптік аймақтарында өндіріс ашылады</p></div>
+    <div class="step"><h4>4. Жұмыс орны</h4><p>Жұмыссыз жастар ресми жұмысқа алынады, саны БЖЗҚ жарналары арқылы тексеріледі</p></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Тараптардың міндеттері</h3>
+    <table class="data">
+      <thead><tr><th>Тарап</th><th>Міндеті</th><th>Не ұтады</th></tr></thead>
+      <tbody>
+        <tr><td>Мұнай компаниялары</td><td class="w">Ұзақ мерзімді тапсырыс береді (офф-тейк келісімшарт)</td><td class="w">Қазақстандық қамту міндеттемесі, логистика шығынының қысқаруы, әлеуметтік тұрақтылық</td></tr>
+        <tr><td>«Даму» қоры</td><td class="w">Келісімшартты кепіл ретінде танып қаржыландырады</td><td class="w">Тәуекел төмендейді, портфель саудадан өндіріске ауысады</td></tr>
+        <tr><td>Облыстық кәсіпкерлік басқармасы</td><td class="w">Өнеркәсіптік аймақтан алаң береді</td><td class="w">Жұмыссыздықтың төмендеуі, салық базасының кеңеюі</td></tr>
+        <tr><td>«Атамекен» палатасы</td><td class="w">Мұнай компаниялары мен кәсіпкерлерді жұптастырады</td><td class="w">Мүшелерінің нақты тапсырысқа қол жеткізуі</td></tr>
+        <tr><td>Кәсіпкер</td><td class="w">Зауыт салып, жергілікті жастарды ресми жұмысқа алады</td><td class="w">Кепіл мүлкі болмаса да қаржы, тұрақты өткізу нарығы</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Қосалқы тетіктер</h3>
+    <p class="sub">Модельдің әлсіз тұстарын өтейтін алты тетік</p>
+    <table class="data">
+      <thead><tr><th>Тетік</th><th>Қандай әлсіздікті өтейді</th><th>Жауапты</th></tr></thead>
+      <tbody>
+        <tr><td class="w">Офф-тейк тіркелімі</td><td class="w">Ақпарат жетіспеушілігі (сауалнамада 39,5%)</td><td>«Атамекен»</td></tr>
+        <tr><td class="w">Біліктілік гранты</td><td class="w">Сапа стандартына сай болмау, сертификат жоқтығы</td><td>Облыстық басқарма</td></tr>
+        <tr><td class="w">Тәуекелді бөлісу шарты</td><td class="w">Мұнай компаниясының шартты бұзу қаупі</td><td>Компания, «Даму»</td></tr>
+        <tr><td class="w">БЖЗҚ мониторингі және clawback</td><td class="w">Нәтиженің өлшенбеуі</td><td>«Даму» қоры</td></tr>
+        <tr><td class="w">Кадр даярлау тобы</td><td class="w">Біліктілік тапшылығы (сауалнамада 58,1%)</td><td>Колледж, кәсіпорын</td></tr>
+        <tr><td class="w">Үш жылдық бюджеттік міндеттеме</td><td class="w">Қаржыландыру тұрақсыздығы (бес еселік ауытқу)</td><td>Облыс әкімдігі</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Кезең-кезеңді қаржыландыру</h3>
+    <p class="sub">Келесі транш алдыңғы кезеңдегі жұмыс орны расталғаннан кейін ғана бөлінеді</p>
+    <table class="data">
+      <thead><tr><th>Кезең</th><th>Шарт</th><th>Тексеру тәсілі</th><th class="n">Транш</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td>Офф-тейк келісімшарт тіркеледі</td><td>«Атамекен» тіркелімі</td><td class="n">—</td></tr>
+        <tr><td>1</td><td>Жоба паспорты және алаң бекітілді</td><td>Басқарма шешімі</td><td class="n">30%</td></tr>
+        <tr><td>2</td><td>Құрылыс 50% дайын</td><td>Техникалық қадағалау актісі</td><td class="n">30%</td></tr>
+        <tr><td>3</td><td>Өндіріс іске қосылды, алғашқы жеткізілім</td><td>Жеткізу жүкқұжаты</td><td class="n">25%</td></tr>
+        <tr><td>4</td><td>Жұмыс орны 12 ай сақталды</td><td>БЖЗҚ зейнетақы жарналары</td><td class="n">15%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Бюджеттік тиімділік калькуляторы</h3>
+    <p class="sub">Мәндерді өзгертіп, модельдің бір жобасының мемлекетке қанша тұратынын есептеңіз</p>
+    <div class="calc">
+      <div class="fields">
+        <button class="preset" id="btnDamu">«Даму» ережесін қолдану (40%)</button>
+        <div class="f"><label for="iLoan">Несие сомасы, млн ₸</label><input id="iLoan" type="number" value="300" min="1" step="10"></div>
+        <div class="f"><label for="iMkt">Нарықтық мөлшерлеме, %</label><input id="iMkt" type="number" value="19" min="0" step="0.5"></div>
+        <div class="f"><label for="iSub">Кәсіпкер төлейтін мөлшерлеме, %</label><input id="iSub" type="number" value="11.4" min="0" step="0.1"></div>
+        <div class="f"><label for="iYrs">Мерзімі, жыл</label><input id="iYrs" type="number" value="5" min="1" max="15" step="1"></div>
+        <div class="f"><label for="iJobs">Жаңа жұмыс орны</label><input id="iJobs" type="number" value="40" min="1" step="1"></div>
+        <div class="f"><label for="iSal">Орташа жалақы, ₸/ай</label><input id="iSal" type="number" value="350000" min="85000" step="10000"></div>
+        <div class="err" id="calcErr"></div>
+      </div>
+      <div class="out">
+        <div class="o"><div class="k">Жылдық субсидия шығыны</div><div class="v" id="oYear">—</div></div>
+        <div class="o"><div class="k">Мерзім ішіндегі жалпы шығын</div><div class="v" id="oTotal">—</div></div>
+        <div class="o"><div class="k">Бір жұмыс орнының бағасы</div><div class="v" id="oPerJob">—</div></div>
+        <div class="o"><div class="k">Жылдық еңбек салығы мен аударымдары</div><div class="v" id="oTax">—</div></div>
+        <div class="o"><div class="k">Бюджет шығынының өтелу мерзімі</div><div class="v" id="oPayback">—</div></div>
+        <div class="o"><div class="k">Орташа грантпен салыстыру</div><div class="v" id="oVsGrant">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    Есептеу логикасы: субсидия = несие × (нарықтық − кәсіпкер төлейтін мөлшерлеме). «Даму» ережесі бойынша мемлекет номиналды мөлшерлеменің 40%-ын жабады, сондықтан 19%-тық несиеде кәсіпкерге 11,4% қалады. Салық түсімі жуықтап алынған — жалақы қорынан ЖТС, әлеуметтік салық, ӘА және МЗЖ жиынтығы шамамен 22% деп есептелген. Бұл нақты есеп емес, модельдің ретін көрсететін бағалау.
+  </div>
+</section>
+
+<!-- ===== 8. ҚОРЫТЫНДЫ ===== -->
+<section class="page" id="p8">
+  <header>
+    <h1>Қорытынды</h1>
+    <p>Деректерден тікелей шығатын тұжырымдар — әрқайсысы нақты санға негізделген.</p>
+  </header>
+
+  <div class="passport">
+    <h3 style="font-size:15px;margin-bottom:12px">Зерттеу паспорты</h3>
+    <dl>
+      <dt>Мақсаты</dt>
+      <dd>Маңғыстау облысында ШОБ-ты мемлекеттік қолдауға бөлінген қаржының тиімділігін субъект саны, өнім көлемі, жұмыспен қамту және өңір экономикасындағы үлесі арқылы бағалау.</dd>
+      <dt>Гипотезасы</dt>
+      <dd>Гранттар мен субсидиялар көлемінің артуы субъект саны мен өндіріс көлемінің өсуіне ғана емес, жаңа тұрақты жұмыс орындарының құрылуына да ықпал етуі тиіс.</dd>
+      <dt>Нәтижесі</dt>
+      <dd>Гипотеза толық расталмады. Субъектілер саны 39,3%-ға өсті, ал жұмыспен қамту 2023 жылдан бері 151 мың адам деңгейінде тұрып қалды.</dd>
+      <dt>Ұсынылатын шешім</dt>
+      <dd>Мұнай компаниялары, жергілікті ШОБ және «Даму» қорын байланыстыратын авторлық үшжақты өндірістік модель.</dd>
+    </dl>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="finding"><span class="fig">2,23 → 1,92</span><h4>Сандық өсім сәйкессіздігі</h4><p>Бір субъектіге шаққандағы жұмысшы саны 13,7%-ға қысқарған. 2022 жылы қосылған әр жаңа субъектіге 1,57 жұмыс орны келсе, 2025 жылы бұл көрсеткіш 0,12-ге түсті.</p></div>
+    <div class="finding o"><span class="fig">+61,6% / −6,6%</span><h4>Өсімнің көбі — баға өсімі</h4><p>Өнім ағымдағы бағада 61,6%-ға өскенімен, салыстырмалы бағада нақты көлем 6,6%-ға қысқарған. 2023 жылы өнім индексі 89,5%-ды құраған.</p></div>
+    <div class="finding"><span class="fig">24,0%</span><h4>Қолдау өндіріске жетпейді</h4><p>249,16 млрд теңгенің тек 59,68 млрд-ы (612 жоба) өңдеу өнеркәсібіне бағытталған. Саудада 2 097 жоба — жоба саны бойынша ең көбі.</p></div>
+    <div class="finding o"><span class="fig">HHI 4 134</span><h4>Аумақтық шоғырлану</h4><p>Субсидия көлемінің 61,3%-ы Ақтауға тиесілі. Херфиндаль индексі 4 134 — «жоғары шоғырланған» деңгей. Шеткі төрт аудан облыстық өнімнің 8,2%-ын ғана береді.</p></div>
+    <div class="finding"><span class="fig">Джини 0,758</span><h4>Қаржы теңсіз бөлінген</h4><p>6 030 жобаның жартысы қаржының 6,5%-ын алса, ең ірі 61 жоба — 33,2%-ын. Медиана 11,0 млн ₸, орташа 41,3 млн ₸.</p></div>
+    <div class="finding o"><span class="fig">−14%</span><h4>Грант инфляциядан қалды</h4><p>Орташа грант 2023–2025 жылдары 4,63-тен 4,87 млн теңгеге, 5,2%-ға өсті. Жиынтық баға өсімі 22,2% болғандықтан, нақты сатып алу қабілеті 14%-ға төмендеді.</p></div>
+    <div class="finding"><span class="fig">60,5% / 53,5%</span><h4>Кедергі — құжат пен кепіл</h4><p>Кәсіпкерлер қаржының жоқтығын емес, бюрократия мен кепіл мүлкінің жетіспеушілігін бірінші орынға қойған. Бұл институционалдық шешім талап етеді.</p></div>
+    <div class="finding o"><span class="fig">Өлшенбейді</span><h4>Нәтиже бақыланмайды</h4><p>«Даму» қорының есебінде жоба бойынша ашылған жұмыс орындарының саны туралы баған жүргізілмейді. Өлшенбеген нәтижені басқару да мүмкін емес.</p></div>
+  </div>
+
+  <div class="note" style="margin-top:16px">
+    <strong>Негізгі ұсыныс.</strong> Қолдау көлемін емес, оның шартын өзгерту қажет: офф-тейк келісімшартты кепілдің орнына қабылдау, траншты БЖЗҚ жарналарымен расталатын жұмыс орнына байланыстыру және басымдықты Ақтаудан тыс аудандардағы өңдеу өнеркәсібіне бағыттау.
+  </div>
+</section>
+
+<!-- ===== 9. ДЕРЕККӨЗДЕР ===== -->
+<section class="page" id="p9">
+  <header>
+    <h1>Дереккөздер</h1>
+    <p>Дашбордтағы барлық сан төмендегі бастапқы құжаттардан алынған.</p>
+  </header>
+
+  <div class="card">
+    <ul class="src">
+      <li><b>Т-02-06-К, IV тоқсан 2025</b><span>ҚР ҰСБ Маңғыстау облысы бойынша департаменті. Шағын және орта кәсіпкерлік мониторингі, 2025 ж. қаңтар-желтоқсан. № 10-18/256-ІН, 28.04.2026. Аудандық және салалық кесінді.</span></li>
+      <li><b>Т-02-05-К, IV тоқсан 2024</b><span>Сол департамент, 15.04.2025. 2024 жылғы аудандық және салалық кесінді.</span></li>
+      <li><b>Т-02-04-К, 2023 жыл</b><span>Сол департамент, № 10-18/199-ІН, 15.04.2024. 2023 жылғы аудандық және салалық кесінді.</span></li>
+      <li><b>Жедел ақпарат № 11-19/332-ІН, 14.04.2023</b><span>2022 жылғы аудандық және салалық деректер.</span></li>
+      <li><b>Жедел ақпарат № 11-22/-0/518-ІН, 15.04.2022</b><span>2021 жылғы аудандық деректер. Бұл шығарылымда салалық кесінді жарияланбаған.</span></li>
+      <li><b>Маңғыстау облысы әкімдігінің кәсіпкерлік және сауда басқармасы</b><span>№ ЖТ-2026-03763749 өтінішке жауап, 27.08.2026. 2021–2025 жж. қайтарымсыз грант бойынша қаражат және жоба саны.</span></li>
+      <li><b>«Даму» кәсіпкерлікті дамыту қоры</b><span>Субсидиялау жобалары бойынша есеп, 01.08.2026 жағдайына. Маңғыстау облысы бойынша 6 030 жазба: аудан, сала, ОКЭД, бизнес мөлшері, мақсаты, банк, бағдарлама, басшының жынысы, несие сомасы.</span></li>
+      <li><b>«Даму» қорының бағдарламалық шарттары</b><span>Қор сайтындағы қолданыстағы субсидиялау және кепілдендіру бағдарламалары.</span></li>
+      <li><b>Тіркелген және жұмыс істеп тұрған ШОБ субъектілерінің саны</b><span>ҚР ҰСБ динамикалық қатарлары, 2021–2025 жж.</span></li>
+      <li><b>Кәсіпкерлер сауалнамасы</b><span>Автордың өз зерттеуі. Google Forms, 43 респондент, 2026 ж. 5–7 қыркүйек. 5 сұрақ: қолдау мәртебесі, әлеуметтік жауапкершілік, жастарды жұмысқа алуға дайындық, офф-тейк, кедергілер.</span></li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Есептеу әдістемесі</h3>
+    <table class="data">
+      <thead><tr><th>Көрсеткіш</th><th>Формула</th></tr></thead>
+      <tbody>
+        <tr><td>Еңбек сыйымдылығы (L)</td><td>L = E ÷ N</td></tr>
+        <tr><td>Шекті еңбек сыйымдылығы (ΔL)</td><td>ΔL = (Eₜ − Eₜ₋₁) ÷ (Nₜ − Nₜ₋₁)</td></tr>
+        <tr><td>Нақты өнім өсімі</td><td>жылдық индекстердің көбейтіндісі</td></tr>
+        <tr><td>Джини коэффициенті</td><td>жоба сомаларының үлестірімі бойынша</td></tr>
+        <tr><td>Херфиндаль индексі (HHI)</td><td>үлестердің квадраттарының қосындысы × 10 000</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note warn">
+    <strong>Дерек толықтығы туралы.</strong> 2021 жыл бойынша салалық кесінді ҚР ҰСБ-ның сол жылғы жедел ақпаратында жарияланбаған. «Даму» тіркелімінде Маңғыстау облысы деп белгіленген 44 жоба шын мәнінде басқа өңірлерге тиесілі (Тереңкөл, Жылыой, Қызылорда) — олар аудандық есептеулерден шығарылды. Тоқтатылған субъектілер туралы жеке дерек жарияланбайды, сондықтан субъектілердің өміршеңдігі бағаланбады.
+  </div>
+</section>
+
+</div></main>
+</div>
+<script>
+/* ================= ДЕРЕКТЕР ================= */
+const YEARS=[2021,2022,2023,2024,2025];
+const REG={2021:64330,2022:81619,2023:84971,2024:83307,2025:83751};
+const ACT={2021:56521,2022:75341,2023:79742,2024:76571,2025:78741};
+const EMP={2021:125886,2022:155340,2023:151382,2024:151020,2025:151273};
+const OUT={2021:1604566,2022:1831998,2023:1915995,2024:2186402,2025:2593140};
+const IDX={2021:{s:106.8,e:99.9,o:109.3},2022:{s:133.3,e:123.4,o:97.4},
+           2023:{s:105.8,e:94.6,o:89.5},2024:{s:96.0,e:99.0,o:107.0},2025:{s:102.8,e:99.0,o:100.1}};
+
+const DN=['Ақтау қ.ә.','Жаңаөзен қ.ә.','Бейнеу ауданы','Қарақия ауданы','Маңғыстау ауданы','Мұнайлы ауданы','Түпқараған ауданы'];
+const DIST={
+ 2021:{subj:[32349,8409,3329,2062,2636,5796,1940],emp:[83461,15449,4881,3352,3584,10803,4356],
+       out:[1390673,93551,10393,7520,10931,66567,25029],sub:[70.25,4.50,4.76,0.09,0.91,3.20,3.91]},
+ 2022:{subj:[40066,11795,5088,2666,3575,9231,2920],emp:[99644,20172,6588,3936,4753,14936,5311],
+       out:[1540493,113269,13152,14215,24404,97486,28703],sub:[25.36,4.46,0.51,0.69,1.28,6.16,1.98]},
+ 2023:{subj:[42184,12529,5381,2619,3607,10330,3092],emp:[93994,19580,6789,3655,5280,16786,5298],
+       out:[1576221,111604,16942,18341,37815,116731,38341],sub:[24.31,10.26,0.52,2.34,2.74,7.62,2.82]},
+ 2024:{subj:[41948,11775,4589,2265,3053,10198,2743],emp:[94970,19958,5769,3220,4563,17717,4823],
+       out:[1682068,183350,24372,24375,43513,176825,51899],sub:[24.09,13.14,1.25,0.81,1.30,9.90,4.50]},
+ 2025:{subj:[44846,11340,4327,2197,2889,10396,2746],emp:[94426,21888,5640,3400,4417,17003,4499],
+       out:[1824318,281104,43645,37715,62381,276212,67765],sub:[8.74,1.23,0.83,0.13,0.19,2.65,1.39]}
+};
+
+const SN=['Сауда, автожөндеу','Өзге қызметтер','Көлік және жинақтау','Өңдеу өнеркәсібі','Құрылыс',
+ 'Жылжымайтын мүлік','Ауыл шаруашылығы','Әкімшілік қызмет','Тұру және тамақтану','Білім беру',
+ 'Кәсіби, ғылыми қызмет','Денсаулық сақтау','Ақпарат және байланыс','Өнер және демалыс',
+ 'Тау-кен өнеркәсібі','Сумен жабдықтау','Қаржы және сақтандыру','Электр, газ, жылу'];
+const SECT={
+ 2021:null,
+ 2022:{subj:[24655,20147,3767,4366,4088,3671,3795,3084,1696,1354,1962,762,689,552,356,231,89,77],
+       emp:[39204,22679,10690,12282,14082,7299,4744,12250,5945,4934,5706,4101,1603,1237,6086,1842,237,419],
+       out:[380237,35136,155044,187522,294686,32414,12777,198235,32208,17152,69217,35473,5263,5771,311264,13982,1838,43752]},
+ 2023:{subj:[27432,19819,3777,5200,4129,3670,4398,3107,1713,1661,1883,906,697,550,381,253,84,82],
+       emp:[42394,21916,11049,12896,10900,6349,5454,9633,4749,5718,5663,4290,1452,1098,5428,1730,245,418],
+       out:[323956,60434,153955,280820,170668,59570,14059,61529,31253,29349,69248,26072,5023,7011,545228,23595,1364,52861]},
+ 2024:{subj:[27155,17263,4376,4989,3904,3619,3814,3143,1795,1815,1762,948,672,533,377,250,79,77],
+       emp:[39710,20315,11861,14739,13156,6042,4686,8550,5165,6885,5582,4136,1391,1227,5510,1442,227,396],
+       out:[568722,86648,239143,300315,334106,38975,17707,57127,43147,39332,51112,31445,12332,10457,282251,27390,483,45710]},
+ 2025:{subj:[27036,16287,5621,4763,4562,3991,3820,3451,2149,2078,1856,1002,709,605,388,242,107,74],
+       emp:[39451,18064,13363,13903,11945,6818,4797,11199,5514,6617,4934,4479,1310,1297,5269,1891,194,228],
+       out:[648256,127431,316602,353763,323523,59226,29074,98009,67927,52164,82380,44444,13205,32678,311783,22940,1607,8128]}
+};
+
+const SUB={2021:{sum:87.64,prj:2072},2022:{sum:40.70,prj:1595},2023:{sum:50.61,prj:1024},
+           2024:{sum:55.05,prj:1162},2025:{sum:15.16,prj:177}};
+const GRA={2021:{sum:34.3,prj:9},2022:{sum:20.0,prj:4},2023:{sum:245.6,prj:53},
+           2024:{sum:99.8,prj:20},2025:{sum:87.6,prj:18}};
+const AVG_GRANT=487.3/104;
+
+const BANKS=[['Халық банкі',87.17,2165],['Банк ЦентрКредит',42.51,1999],['ForteBank',34.38,408],
+ ['Bereke Bank',24.73,629],['Bank RBK',13.19,70],['Нұрбанк',10.62,119],['ҚДБ',9.46,1],
+ ['Alatau City Bank',9.13,292],['Еуразиялық банк',5.21,95],['Өзгелері',12.76,1250]];
+
+const SURVEY={
+ barriers:[['Құжат көптігі, бюрократия',26],['Кепіл мүлкінің жоқтығы',23],['Ақпараттың аздығы',17],
+           ['Жаңа ережелердің қатаңдығы',9],['Кедергі жоқ',2]],
+ q1:[['Жоспарламаймын',19],['Жоспарлаймын',9],['Иә, алдым',8],['Қиын / бас тартты',7]],
+ q2:[['Иә, міндетті',25],['Жоқ, міндетті емес',10],['Тек ірі және орта бизнес',8]],
+ q4:[['Иә, қажет',33],['Жоқ, қажет емес',6],['Делдалдарды байытады',4]]
+};
+
+const LOGO="data:image/png;base64,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";
+document.getElementById('logoR').src=LOGO;
+document.getElementById('logoH').src=LOGO;
+
+/* ================= СТИЛЬ ================= */
+const C={green:'#1B7A4B',greenDk:'#123A2B',greenSoft:'#7FC0A0',greenPale:'#CDE6D9',
+         gold:'#C9A227',goldPale:'#E8D48A',alert:'#A8402F',muted:'#5F7268'};
+Chart.defaults.font.family="'PT Sans', system-ui, sans-serif";
+Chart.defaults.font.size=12;
+Chart.defaults.color=C.muted;
+Chart.defaults.plugins.legend.labels.boxWidth=12;
+Chart.defaults.plugins.legend.labels.boxHeight=12;
+Chart.defaults.maintainAspectRatio=false;
+
+const nf=n=>new Intl.NumberFormat('ru-RU').format(Math.round(n));
+const nf1=n=>new Intl.NumberFormat('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1}).format(n);
+const nf2=n=>new Intl.NumberFormat('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+const grid={grid:{color:'#E6EDE9'},border:{display:false}};
+const noGrid={grid:{display:false},border:{display:false}};
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const L=y=>EMP[y]/ACT[y];
+function dL(y){const i=YEARS.indexOf(y);if(i<1)return null;
+  const p=YEARS[i-1],dn=ACT[y]-ACT[p];if(dn<=0)return null;return (EMP[y]-EMP[p])/dn;}
+// нақты индекс тізбегі (2021=100)
+const REALIDX={2021:100};
+(function(){let r=100;for(const y of [2022,2023,2024,2025]){r=r*IDX[y].o/100;REALIDX[y]=r;}})();
+
+let YEAR=2025, PAGE='p0', distMode='out';
+const ch={}, built={};
+const YEAR_PAGES=['p1','p3','p4','p5'];
+
+/* ================= ГРАФИКТЕР ================= */
+function build(id){
+ if(built[id])return; built[id]=true;
+
+ if(id==='p1'){
+  ch.gap=new Chart(document.getElementById('cGap'),{type:'line',
+   data:{labels:YEARS,datasets:[
+    {label:'Өнім (номинал)',data:YEARS.map(y=>OUT[y]/OUT[2021]*100),borderColor:C.gold,backgroundColor:C.gold,tension:.25,borderWidth:2.5},
+    {label:'Субъект саны',data:YEARS.map(y=>ACT[y]/ACT[2021]*100),borderColor:C.greenSoft,backgroundColor:C.greenSoft,tension:.25,borderWidth:2.5},
+    {label:'Жұмыспен қамту',data:YEARS.map(y=>EMP[y]/EMP[2021]*100),borderColor:C.green,backgroundColor:C.green,tension:.25,borderWidth:2.5}]},
+   options:{scales:{y:{...grid,suggestedMin:90},x:noGrid},plugins:{legend:{position:'bottom'},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+nf1(c.parsed.y)}}}}});
+  ch.ovDist=new Chart(document.getElementById('cOvDist'),{type:'bar',
+   data:{labels:DN,datasets:[{data:[],backgroundColor:C.gold,borderRadius:3}]},
+   options:{indexAxis:'y',scales:{x:{...grid},y:noGrid},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>nf(c.parsed.x)+' млн ₸'}}}}});
+ }
+
+ if(id==='p2'){
+  new Chart(document.getElementById('cSubj'),{type:'bar',
+   data:{labels:YEARS,datasets:[
+    {label:'Тіркелген',data:YEARS.map(y=>REG[y]),backgroundColor:C.greenPale,borderRadius:3},
+    {label:'Жұмыс істейтін',data:YEARS.map(y=>ACT[y]),backgroundColor:C.green,borderRadius:3}]},
+   options:{scales:{y:{...grid},x:noGrid},plugins:{legend:{position:'bottom'},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+nf(c.parsed.y)}}}}});
+  new Chart(document.getElementById('cEmp'),{type:'line',
+   data:{labels:YEARS,datasets:[{data:YEARS.map(y=>EMP[y]),borderColor:C.green,
+    backgroundColor:'rgba(27,122,75,.10)',fill:true,tension:.25,borderWidth:2.5,pointRadius:4}]},
+   options:{scales:{y:{...grid,suggestedMin:110000},x:noGrid},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>nf(c.parsed.y)+' адам'}}}}});
+  new Chart(document.getElementById('cReal'),{type:'line',
+   data:{labels:YEARS,datasets:[
+    {label:'Ағымдағы бағада',data:YEARS.map(y=>OUT[y]/OUT[2021]*100),borderColor:C.gold,backgroundColor:C.gold,tension:.25,borderWidth:2.5},
+    {label:'Салыстырмалы бағада',data:YEARS.map(y=>REALIDX[y]),borderColor:C.green,backgroundColor:C.green,tension:.25,borderWidth:2.5,borderDash:[5,3]}]},
+   options:{scales:{y:{...grid},x:noGrid},plugins:{legend:{position:'bottom'},
+    tooltip:{callbacks:{label:c=>c.dataset.label+': '+nf1(c.parsed.y)}}}}});
+  new Chart(document.getElementById('cL'),{type:'bar',
+   data:{labels:YEARS,datasets:[{data:YEARS.map(y=>L(y)),
+    backgroundColor:YEARS.map(y=>y===2021?C.green:C.greenSoft),borderRadius:3}]},
+   options:{scales:{y:{...grid,min:1.7,max:2.35},x:noGrid},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>nf2(c.parsed.y)+' адам / субъект'}}}}});
+ }
+
+ if(id==='p3'){
+  ch.dist=new Chart(document.getElementById('cDist'),{type:'bar',
+   data:{labels:[],datasets:[{data:[],backgroundColor:C.green,borderRadius:3}]},
+   options:{indexAxis:'y',scales:{x:{...grid},y:noGrid},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>nf(c.parsed.x)}}}}});
+  ch.share=new Chart(document.getElementById('cShare'),{type:'doughnut',
+   data:{labels:[],datasets:[{data:[],
+    backgroundColor:[C.greenDk,C.green,C.greenSoft,C.greenPale,C.goldPale,C.gold,C.alert],borderWidth:1,borderColor:'#fff'}]},
+   options:{cutout:'52%',plugins:{legend:{position:'right',labels:{padding:8,font:{size:11.5}}},
+    tooltip:{callbacks:{label:c=>{const t=sum(c.dataset.data);return c.label+': '+(c.parsed/t*100).toFixed(1)+'%';}}}}}});
+  const pal=[C.greenDk,C.green,C.greenSoft,C.greenPale,C.goldPale,C.gold,C.alert];
+  new Chart(document.getElementById('cPanel'),{type:'bar',
+   data:{labels:YEARS,datasets:DN.map((n,i)=>({label:n,data:YEARS.map(y=>DIST[y].sub[i]),
+    backgroundColor:pal[i],borderRadius:2}))},
+   options:{scales:{y:{...grid,stacked:true,title:{display:true,text:'млрд ₸'}},x:{...noGrid,stacked:true}},
+    plugins:{legend:{position:'bottom',labels:{font:{size:11}}},
+     tooltip:{callbacks:{label:c=>c.dataset.label+': '+nf2(c.parsed.y)+' млрд ₸'}}}}});
+ }
+
+ if(id==='p4'){
+  ch.sector=new Chart(document.getElementById('cSector'),{type:'bar',
+   data:{labels:SN,datasets:[
+    {label:'Субъект үлесі',data:[],backgroundColor:C.greenPale,borderRadius:2},
+    {label:'Жұмыспен қамту үлесі',data:[],backgroundColor:C.green,borderRadius:2},
+    {label:'Өнім үлесі',data:[],backgroundColor:C.gold,borderRadius:2}]},
+   options:{indexAxis:'y',scales:{x:{...grid,title:{display:true,text:'%'}},y:noGrid},
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+nf1(c.parsed.x)+'%'}}}}});
+  ch.jobs=new Chart(document.getElementById('cJobs'),{type:'bar',
+   data:{labels:[],datasets:[{data:[],backgroundColor:[],borderRadius:3}]},
+   options:{scales:{y:{...grid,title:{display:true,text:'адам'}},
+    x:{...noGrid,ticks:{maxRotation:70,minRotation:50,font:{size:10}}}},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>nf1(c.parsed.y)+' адам / субъект'}}}}});
+ }
+
+ if(id==='p5'){
+  ch.sub=new Chart(document.getElementById('cSub'),{type:'bar',
+   data:{labels:YEARS,datasets:[{data:YEARS.map(y=>SUB[y].sum),backgroundColor:[],borderRadius:3}]},
+   options:{scales:{y:{...grid,title:{display:true,text:'млрд ₸'}},x:noGrid},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>nf2(c.parsed.y)+' млрд ₸ · '+nf(SUB[YEARS[c.dataIndex]].prj)+' жоба'}}}}});
+  ch.grant=new Chart(document.getElementById('cGrant'),{
+   data:{labels:YEARS,datasets:[
+    {type:'bar',label:'Грант сомасы, млн ₸',data:YEARS.map(y=>GRA[y].sum),backgroundColor:[],borderRadius:3,yAxisID:'y'},
+    {type:'line',label:'Жоба саны',data:YEARS.map(y=>GRA[y].prj),borderColor:C.green,backgroundColor:C.green,
+     borderWidth:2.5,tension:.25,pointRadius:4,yAxisID:'y1'}]},
+   options:{scales:{y:{...grid,position:'left',title:{display:true,text:'млн ₸'}},
+    y1:{...noGrid,position:'right',title:{display:true,text:'жоба'}},x:noGrid},
+    plugins:{legend:{position:'bottom'}}}});
+  new Chart(document.getElementById('cBank'),{type:'bar',
+   data:{labels:BANKS.map(b=>b[0]),datasets:[{data:BANKS.map(b=>b[1]),
+    backgroundColor:BANKS.map((b,i)=>i===BANKS.length-1?C.greenPale:(i<3?C.green:C.greenSoft)),borderRadius:3}]},
+   options:{indexAxis:'y',scales:{x:{...grid},y:noGrid},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>nf2(c.parsed.x)+' млрд ₸ · '+nf(BANKS[c.dataIndex][2])+' жоба'}}}}});
+  new Chart(document.getElementById('cGen'),{type:'bar',
+   data:{labels:['Жоба саны, %','Қаржы көлемі, %'],datasets:[
+    {label:'Әйел',data:[53.1,32.3],backgroundColor:C.gold,borderRadius:3},
+    {label:'Ер',data:[46.9,67.7],backgroundColor:C.green,borderRadius:3}]},
+   options:{indexAxis:'y',scales:{x:{...grid,stacked:true,max:100},y:{...noGrid,stacked:true}},
+    plugins:{legend:{position:'bottom'},tooltip:{callbacks:{label:c=>c.dataset.label+': '+nf1(c.parsed.x)+'%'}}}}});
+ }
+
+ if(id==='p6'){
+  new Chart(document.getElementById('cBar'),{type:'bar',
+   data:{labels:SURVEY.barriers.map(b=>b[0]),datasets:[{data:SURVEY.barriers.map(b=>b[1]),
+    backgroundColor:[C.gold,C.gold,C.green,C.greenSoft,C.greenPale],borderRadius:3}]},
+   options:{indexAxis:'y',scales:{x:{...grid,max:30},y:noGrid},plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>c.parsed.x+' жауап ('+(c.parsed.x/43*100).toFixed(1)+'%)'}}}}});
+  const pie=(el,arr,cols)=>new Chart(document.getElementById(el),{type:'doughnut',
+   data:{labels:arr.map(a=>a[0]),datasets:[{data:arr.map(a=>a[1]),backgroundColor:cols,borderWidth:1,borderColor:'#fff'}]},
+   options:{cutout:'50%',plugins:{legend:{position:'right',labels:{padding:8,font:{size:11.5}}},
+    tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+' ('+(c.parsed/43*100).toFixed(1)+'%)'}}}}});
+  pie('cQ1',SURVEY.q1,[C.greenPale,C.greenSoft,C.green,C.alert]);
+  pie('cQ4',SURVEY.q4,[C.green,C.goldPale,C.gold]);
+  pie('cQ2',SURVEY.q2,[C.green,C.greenPale,C.greenSoft]);
+ }
+}
+
+/* ================= ЖАҢАРТУ ================= */
+function renderOverview(){
+ const y=YEAR,d=DIST[y],g=GRA[y];
+ document.getElementById('kAct').textContent=nf(ACT[y]);
+ document.getElementById('kActN').textContent='өткен жылға '+nf1(IDX[y].s)+'%';
+ document.getElementById('kActN').className='n '+(IDX[y].s>=100?'up':'down');
+ document.getElementById('kEmp').textContent=nf(EMP[y]);
+ document.getElementById('kEmpN').textContent='өткен жылға '+nf1(IDX[y].e)+'%';
+ document.getElementById('kEmpN').className='n '+(IDX[y].e>=100?'up':'down');
+ document.getElementById('kOut').textContent=nf1(OUT[y]/1000)+' млрд ₸';
+ document.getElementById('kOutN').textContent='салыстырмалы бағада '+nf1(IDX[y].o)+'%';
+ document.getElementById('kOutN').className='n '+(IDX[y].o>=100?'up':'down');
+ document.getElementById('kRat').textContent=nf2(L(y));
+ const dl=dL(y);
+ document.getElementById('kRatN').textContent=dl!==null?('жаңа субъектіге '+nf2(dl)):'жаңа субъект қосылмаған';
+
+ const share=g.sum/OUT[y]*100;
+ document.getElementById('heroH').textContent=y+' жылы бөлінген грант — ШОБ өнімінің '+share.toFixed(3).replace('.',',')+'%-ы';
+ document.getElementById('heroP').textContent=y+' жылы жергілікті бюджеттен '+g.prj+' жобаға '+nf1(g.sum)+
+  ' млн теңге қайтарымсыз грант бөлінді. Сол жылы ШОБ субъектілері '+nf(OUT[y])+
+  ' млн теңгенің өнімін шығарды, ал субсидияланған несиелердің көлемі '+nf2(SUB[y].sum)+' млрд теңге болды.';
+ document.getElementById('heroBar').style.width=Math.max(share,0.06)+'%';
+ document.getElementById('heroL').textContent=nf1(g.sum)+' млн ₸';
+ document.getElementById('heroR').textContent=nf(OUT[y])+' млн ₸';
+
+ if(ch.gap){ch.gap.data.datasets.forEach(ds=>{
+   ds.pointRadius=YEARS.map(v=>v===y?6:3);
+   ds.pointBackgroundColor=YEARS.map(v=>v===y?ds.borderColor:'#fff');
+   ds.pointBorderWidth=2;});ch.gap.update();}
+ if(ch.ovDist){
+   const p=DN.map((n,i)=>({n,v:d.out[i]})).sort((a,b)=>b.v-a.v);
+   ch.ovDist.data.labels=p.map(x=>x.n);
+   ch.ovDist.data.datasets[0].data=p.map(x=>x.v);
+   ch.ovDist.update();
+   document.getElementById('ovDistSub').textContent=y+' жыл, барлығы '+nf(sum(d.out))+' млн ₸';
+ }
+}
+
+const DM={subj:{t:'Аудандар бойынша субъект саны',f:v=>nf(v)+' бірлік'},
+          emp:{t:'Аудандар бойынша жұмыспен қамту',f:v=>nf(v)+' адам'},
+          out:{t:'Аудандар бойынша өнім шығарылымы',f:v=>nf(v)+' млн ₸'},
+          sub:{t:'Аудандар бойынша субсидия',f:v=>nf2(v)+' млрд ₸'}};
+function renderDistricts(){
+ const y=YEAR,d=DIST[y],arr=d[distMode],meta=DM[distMode];
+ document.getElementById('hDist').textContent=meta.t+' — '+y;
+ const p=DN.map((n,i)=>({n,v:arr[i]})).sort((a,b)=>b.v-a.v);
+ ch.dist.data.labels=p.map(x=>x.n);
+ ch.dist.data.datasets[0].data=p.map(x=>x.v);
+ ch.dist.data.datasets[0].backgroundColor=distMode==='sub'?C.gold:C.green;
+ ch.dist.options.plugins.tooltip.callbacks.label=c=>meta.f(c.parsed.x);
+ ch.dist.update();
+ ch.share.data.labels=p.map(x=>x.n);
+ ch.share.data.datasets[0].data=p.map(x=>x.v);
+ ch.share.update();
+
+ const tO=sum(d.out),tS=sum(d.sub);
+ document.getElementById('dAk').textContent=nf1(d.out[0]/tO*100)+'%';
+ document.getElementById('dAkN').textContent='субъект санының '+nf1(d.subj[0]/sum(d.subj)*100)+'%-ы';
+ document.getElementById('dAkS').textContent=nf1(d.sub[0]/tS*100)+'%';
+ document.getElementById('dRest').textContent=nf1((d.out[2]+d.out[3]+d.out[4]+d.out[6])/tO*100)+'%';
+
+ const tb=document.getElementById('tbDist');tb.innerHTML='';
+ DN.forEach((n,i)=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td>'+n+'</td><td class="n">'+nf(d.subj[i])+'</td><td class="n">'+nf(d.emp[i])+
+   '</td><td class="n">'+nf(d.out[i])+'</td><td class="n">'+nf2(d.sub[i])+
+   '</td><td class="n">'+nf2(d.emp[i]/d.subj[i])+'</td>';
+  tb.appendChild(tr);});
+ const tr=document.createElement('tr');tr.className='total';
+ tr.innerHTML='<td>Маңғыстау облысы</td><td class="n">'+nf(sum(d.subj))+'</td><td class="n">'+nf(sum(d.emp))+
+  '</td><td class="n">'+nf(tO)+'</td><td class="n">'+nf2(tS)+'</td><td class="n">'+nf2(sum(d.emp)/sum(d.subj))+'</td>';
+ tb.appendChild(tr);
+}
+
+function renderSectors(){
+ const y=YEAR,s=SECT[y];
+ document.getElementById('sectWrap').style.display=s?'block':'none';
+ document.getElementById('sectEmpty').style.display=s?'none':'block';
+ if(!s)return;
+ const tS=sum(s.subj),tE=sum(s.emp),tO=sum(s.out);
+ document.getElementById('sTrade').textContent=nf1(s.subj[0]/tS*100)+'%';
+ document.getElementById('sTradeN').textContent=nf(s.subj[0])+' субъект';
+ document.getElementById('sMfg').textContent=nf1(s.subj[3]/tS*100)+'%';
+ document.getElementById('sMfgN').textContent=nf(s.subj[3])+' субъект';
+ const rM=s.emp[3]/s.subj[3],rT=s.emp[0]/s.subj[0];
+ document.getElementById('sRatio').textContent=nf1(rM)+' : '+nf1(rT);
+ ch.sector.data.datasets[0].data=s.subj.map(v=>v/tS*100);
+ ch.sector.data.datasets[1].data=s.emp.map(v=>v/tE*100);
+ ch.sector.data.datasets[2].data=s.out.map(v=>v/tO*100);
+ ch.sector.update();
+ const j=SN.map((n,i)=>({n,v:s.emp[i]/s.subj[i]})).sort((a,b)=>b.v-a.v);
+ ch.jobs.data.labels=j.map(x=>x.n);
+ ch.jobs.data.datasets[0].data=j.map(x=>x.v);
+ ch.jobs.data.datasets[0].backgroundColor=j.map(x=>/Сауда|Өзге/.test(x.n)?C.gold:C.green);
+ ch.jobs.update();
+ document.getElementById('sectNote').textContent=y+' жылы өңдеу өнеркәсібіндегі бір субъект орта есеппен '+nf1(rM)+
+  ' адамды, саудадағы бір субъект '+nf1(rT)+' адамды жұмыспен қамтыған. Тау-кен өнеркәсібінде бұл көрсеткіш '+
+  nf1(s.emp[14]/s.subj[14])+'. Демек бір теңге қолдау өндіріске бағытталса, жұмыс орны әлдеқайда көп ашылады.';
+}
+
+function renderSupport(){
+ const y=YEAR,su=SUB[y],g=GRA[y];
+ document.getElementById('gSum').textContent=nf2(su.sum)+' млрд ₸';
+ document.getElementById('gSumN').textContent=nf(su.prj)+' жоба, 1 жобаға '+nf1(su.sum*1000/su.prj)+' млн ₸';
+ document.getElementById('gGr').textContent=nf1(g.sum)+' млн ₸';
+ document.getElementById('gGrN').textContent=g.prj+' жоба, 1 грантқа '+nf2(g.sum/g.prj)+' млн ₸';
+ document.getElementById('gShare').textContent=(g.sum/OUT[y]*100).toFixed(4).replace('.',',')+'%';
+ document.getElementById('gCov').textContent=((su.prj+g.prj)/REG[y]*100).toFixed(2).replace('.',',')+'%';
+ document.getElementById('gSubSub').textContent=y+' жыл: '+nf2(su.sum)+' млрд ₸ / '+nf(su.prj)+' жоба';
+ if(ch.sub){ch.sub.data.datasets[0].backgroundColor=YEARS.map(v=>v===y?C.green:C.greenPale);ch.sub.update();}
+ if(ch.grant){ch.grant.data.datasets[0].backgroundColor=YEARS.map(v=>v===y?C.gold:C.goldPale);ch.grant.update();}
+}
+
+function fillStatic(){
+ const tb=document.getElementById('tbDyn');
+ YEARS.forEach(y=>{
+  const dl=dL(y);
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td>'+y+'</td><td class="n">'+nf(REG[y])+'</td><td class="n">'+nf(ACT[y])+
+   '</td><td class="n">'+nf(EMP[y])+'</td><td class="n">'+nf(OUT[y])+'</td><td class="n">'+nf1(IDX[y].o)+
+   '</td><td class="n">'+nf2(L(y))+'</td><td class="n">'+(dl!==null?nf2(dl):'—')+'</td>';
+  tb.appendChild(tr);});
+ const ts=document.getElementById('tbSup');
+ YEARS.forEach(y=>{
+  const s=SUB[y],g=GRA[y];
+  const tr=document.createElement('tr');
+  tr.innerHTML='<td>'+y+'</td><td class="n">'+nf2(s.sum)+'</td><td class="n">'+nf(s.prj)+
+   '</td><td class="n">'+nf1(s.sum*1000/s.prj)+'</td><td class="n">'+nf1(g.sum)+
+   '</td><td class="n">'+g.prj+'</td><td class="n">'+nf2(g.sum/g.prj)+'</td>';
+  ts.appendChild(tr);});
+ const tr=document.createElement('tr');tr.className='total';
+ tr.innerHTML='<td>Барлығы</td><td class="n">249,16</td><td class="n">6 030</td><td class="n">41,3</td>'+
+  '<td class="n">487,3</td><td class="n">104</td><td class="n">4,69</td>';
+ ts.appendChild(tr);
+}
+
+function refresh(){
+ document.querySelectorAll('.yr').forEach(e=>e.textContent=YEAR);
+ if(built.p1)renderOverview();
+ if(built.p3)renderDistricts();
+ if(built.p4)renderSectors();
+ if(built.p5)renderSupport();
+ document.getElementById('yearHint').textContent=SECT[YEAR]?'':YEAR+' жыл бойынша салалық кесінді жоқ';
+}
+
+/* ================= КАЛЬКУЛЯТОР ================= */
+function calc(){
+ const g=id=>parseFloat(document.getElementById(id).value);
+ const loan=g('iLoan'),mkt=g('iMkt'),sub=g('iSub'),yrs=g('iYrs'),jobs=g('iJobs'),sal=g('iSal');
+ const err=document.getElementById('calcErr');
+ const bad=[loan,mkt,sub,yrs,jobs,sal].some(v=>!isFinite(v)||v<=0);
+ if(bad||mkt<=sub){
+  err.textContent=bad?'Барлық өріске оң сан енгізіңіз.':'Нарықтық мөлшерлеме кәсіпкер төлейтін мөлшерлемеден жоғары болуы керек.';
+  err.style.display='block';
+  ['oYear','oTotal','oPerJob','oTax','oPayback','oVsGrant'].forEach(i=>document.getElementById(i).textContent='—');
+  return;}
+ err.style.display='none';
+ const py=loan*(mkt-sub)/100,tt=py*yrs,pj=tt/jobs,tx=jobs*sal*12*0.22/1e6;
+ document.getElementById('oYear').textContent=nf1(py)+' млн ₸';
+ document.getElementById('oTotal').textContent=nf1(tt)+' млн ₸';
+ document.getElementById('oPerJob').textContent=nf1(pj)+' млн ₸';
+ document.getElementById('oTax').textContent=nf1(tx)+' млн ₸';
+ document.getElementById('oPayback').textContent=nf1(tt/tx)+' жыл';
+ document.getElementById('oVsGrant').textContent=nf1(tt/AVG_GRANT)+' грантқа тең';
+}
+['iLoan','iMkt','iSub','iYrs','iJobs','iSal'].forEach(i=>document.getElementById(i).addEventListener('input',calc));
+document.getElementById('btnDamu').addEventListener('click',()=>{
+ const mkt=parseFloat(document.getElementById('iMkt').value);
+ if(isFinite(mkt)&&mkt>0){document.getElementById('iSub').value=(mkt*0.6).toFixed(1);calc();}
+});
+
+/* ================= ОҚИҒАЛАР ================= */
+document.getElementById('years').addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ YEAR=+b.dataset.y;
+ [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+ refresh();});
+
+document.getElementById('segDist').addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ distMode=b.dataset.m;
+ [...e.currentTarget.children].forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+ renderDistricts();});
+
+document.getElementById('nav').addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ PAGE=b.dataset.p;
+ [...e.currentTarget.querySelectorAll('button')].forEach(x=>x.setAttribute('aria-current',String(x===b)));
+ document.querySelectorAll('.page').forEach(s=>s.classList.toggle('on',s.id===PAGE));
+ document.getElementById('yearbar').classList.toggle('off',!YEAR_PAGES.includes(PAGE));
+ build(PAGE);refresh();window.scrollTo({top:0});});
+
+fillStatic();calc();
+</script>
+</body>
+</html>
